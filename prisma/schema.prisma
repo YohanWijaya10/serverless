@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model InventoryBalance {
+  warehouseId  String
+  productId    String
+  qtyOnHand    Decimal   @default(0.000) @db.Decimal(18, 3)
+  qtyReserved  Decimal   @default(0.000) @db.Decimal(18, 3)
+  safetyStock  Decimal   @default(0.000) @db.Decimal(18, 3)
+  reorderPoint Decimal   @default(0.000) @db.Decimal(18, 3)
+  updatedAt    DateTime  @default(now())
+  Product      Product   @relation(fields: [productId], references: [productId])
+  Warehouse    Warehouse @relation(fields: [warehouseId], references: [warehouseId])
+
+  @@id([warehouseId, productId])
+  @@index([productId])
+}
+
+model InventoryTransaction {
+  trxId       BigInt           @id @default(autoincrement())
+  trxDate     DateTime         @default(now())
+  warehouseId String
+  productId   String
+  trxType     InventoryTrxType
+  qty         Decimal          @db.Decimal(18, 3)
+  signedQty   Decimal?         @db.Decimal(18, 3)
+  refType     String?
+  refId       String?
+  note        String?
+  createdAt   DateTime         @default(now())
+  Product     Product          @relation(fields: [productId], references: [productId])
+  Warehouse   Warehouse        @relation(fields: [warehouseId], references: [warehouseId])
+
+  @@index([productId, trxDate(sort: Desc)])
+  @@index([trxDate(sort: Desc)])
+  @@index([warehouseId, productId, trxDate(sort: Desc)])
+}
+
+model Product {
+  productId            String                 @id
+  sku                  String?                @unique
+  name                 String
+  category             String?
+  uom                  String                 @default("pcs")
+  isActive             Boolean                @default(true)
+  createdAt            DateTime               @default(now())
+  InventoryBalance     InventoryBalance[]
+  InventoryTransaction InventoryTransaction[]
+  PurchaseOrderItem    PurchaseOrderItem[]
+}
+
+model PurchaseOrder {
+  poId              String              @id
+  supplierId        String
+  poDate            DateTime            @default(now())
+  expectedDate      DateTime?
+  status            POStatus            @default(DRAFT)
+  currency          String              @default("IDR")
+  notes             String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime
+  Supplier          Supplier            @relation(fields: [supplierId], references: [supplierId])
+  PurchaseOrderItem PurchaseOrderItem[]
+
+  @@index([supplierId, poDate(sort: Desc)])
+}
+
+model PurchaseOrderItem {
+  poItemId      BigInt        @id @default(autoincrement())
+  poId          String
+  productId     String
+  qtyOrdered    Decimal       @db.Decimal(18, 3)
+  unitCost      Decimal       @db.Decimal(18, 2)
+  qtyReceived   Decimal       @default(0.000) @db.Decimal(18, 3)
+  createdAt     DateTime      @default(now())
+  PurchaseOrder PurchaseOrder @relation(fields: [poId], references: [poId], onDelete: Cascade)
+  Product       Product       @relation(fields: [productId], references: [productId])
+
+  @@unique([poId, productId])
+  @@index([poId])
+}
+
+model Supplier {
+  supplierId    String          @id
+  name          String
+  phone         String?
+  address       String?
+  termsDays     Int             @default(0)
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  PurchaseOrder PurchaseOrder[]
+}
+
+model Warehouse {
+  warehouseId          String                 @id
+  name                 String
+  location             String?
+  isActive             Boolean                @default(true)
+  createdAt            DateTime               @default(now())
+  InventoryBalance     InventoryBalance[]
+  InventoryTransaction InventoryTransaction[]
+}
+
+enum InventoryTrxType {
+  RECEIPT
+  ISSUE
+  ADJUSTMENT
+  TRANSFER_IN
+  TRANSFER_OUT
+}
+
+enum POStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  RECEIVED
+  CLOSED
+  CANCELED
+}
