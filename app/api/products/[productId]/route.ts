@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { IdParamSchema, ProductUpdateSchema } from '@/lib/validators';
 
@@ -24,4 +24,3 @@ export async function DELETE(_req: NextRequest, ctx: { params: { productId: stri
   await (prisma as any).product.delete({ where: { id: productId } });
   return NextResponse.json({ ok: true });
 }
-

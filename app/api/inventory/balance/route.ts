@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { InventoryBalanceQuerySchema } from '@/lib/validators';
 
@@ -18,4 +18,3 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json(bal ?? null);
 }
-

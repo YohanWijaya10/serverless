@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { IdParamSchema, POReceiveSchema } from '@/lib/validators';
 import { applyInventoryDelta } from '@/lib/inventory';
@@ -58,4 +58,3 @@ export async function POST(req: NextRequest, ctx: { params: { poId: string } }) 
     return NextResponse.json({ message: e?.message ?? 'Error' }, { status: 400 });
   }
 }
-

@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { ProductCreateSchema } from '@/lib/validators';
 
@@ -16,4 +16,3 @@ export async function POST(req: NextRequest) {
   const item = await (prisma as any).product.create({ data: parsed });
   return NextResponse.json(item, { status: 201 });
 }
-

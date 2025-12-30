@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { PurchaseOrderCreateSchema } from '@/lib/validators';
 
@@ -32,4 +32,3 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json(result, { status: 201 });
 }
-
