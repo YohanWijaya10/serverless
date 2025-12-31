@@ -16,7 +16,6 @@ export async function GET(req: NextRequest) {
     if (status) where.status = status;
     if (supplierId) where.supplierId = supplierId;
 
-    // Try order by createdAt, fallback to updatedAt/poDate if createdAt doesn't exist
     let pos: any[] = [];
     try {
       pos = await (prisma as any).purchaseOrder.findMany({ where, orderBy: { createdAt: 'desc' } });
@@ -74,9 +73,10 @@ export async function POST(req: NextRequest) {
     await (tx as any).purchaseOrderItem.createMany({ data: itemsData });
 
     const poId = (po as any).id ?? (po as any).poId;
-    const items = await (tx as any).purchaseOrderItem.findMany({ where: { poId: poId } });
+    const items = await (tx as any).purchaseOrderItem.findMany({ where: { poId } });
     return { ...po, items } as any;
   });
 
   return NextResponse.json(toPlain(result), { status: 201 });
 }
+

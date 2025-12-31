@@ -93,5 +93,12 @@ export const POReceiveSchema = z.object({
     .optional()
 });
 
-export type InventoryTrxType = z.infer<typeof InventoryTrxTypeSchema>;
+export const PurchaseOrderItemCreateSchema = z.object({
+  poId: z.string().min(1),
+  productId: z.string().min(1),
+  qtyOrdered: z.number().positive(),
+  unitCost: z.number().nonnegative(),
+  qtyReceived: z.number().nonnegative().optional()
+});
 
+export type InventoryTrxType = z.infer<typeof InventoryTrxTypeSchema>;

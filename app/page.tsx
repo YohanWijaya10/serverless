@@ -21,11 +21,13 @@ export default function Page() {
               gerbang untuk cek kesehatan sistem dan mengelola master data gudang.
             </p>
             <div className="links">
-              <a href="/api/health" target="_blank" rel="noreferrer">/api/health</a>
-              <a href="/api/warehouses" target="_blank" rel="noreferrer">/api/warehouses</a>
+              <a href="/api/inventorytransaction" target="_blank" rel="noreferrer">/api/inventorytransaction</a>
+              <a href="/api/inventorybalance" target="_blank" rel="noreferrer">/api/inventorybalance</a>
               <a href="/api/products" target="_blank" rel="noreferrer">/api/products</a>
+              <a href="/api/purchaseorder" target="_blank" rel="noreferrer">/api/purchaseorder</a>
+              <a href="/api/purchaseorderitem" target="_blank" rel="noreferrer">/api/purchaseorderitem</a>
               <a href="/api/suppliers" target="_blank" rel="noreferrer">/api/suppliers</a>
-              <a href="/api/purchase-orders" target="_blank" rel="noreferrer">/api/purchase-orders</a>
+              <a href="/api/warehouses" target="_blank" rel="noreferrer">/api/warehouses</a>
             </div>
           </article>
 
@@ -70,6 +72,47 @@ export default function Page() {
           <p className="muted small">
             Jalankan saat dev server aktif di <code>localhost:3000</code>.
           </p>
+        </section>
+
+        <section className="apiDir">
+          <h2>API Directory</h2>
+          <ul className="endpoints">
+            <li>
+              <span className="method get">GET</span>
+              <a href="/api/inventorytransaction" target="_blank" rel="noreferrer">/api/inventorytransaction</a>
+              <span className="desc">Daftar transaksi stok (alias). Filter: warehouseId, productId, trxType, from, to, limit.</span>
+            </li>
+            <li>
+              <span className="method get">GET</span>
+              <a href="/api/inventorybalance" target="_blank" rel="noreferrer">/api/inventorybalance</a>
+              <span className="desc">Semua saldo stok (list).</span>
+            </li>
+            <li>
+              <span className="method get">GET</span>
+              <a href="/api/products" target="_blank" rel="noreferrer">/api/products</a>
+              <span className="desc">Daftar produk.</span>
+            </li>
+            <li>
+              <span className="method get">GET</span>
+              <a href="/api/purchaseorder" target="_blank" rel="noreferrer">/api/purchaseorder</a>
+              <span className="desc">Daftar Purchase Order (+items).</span>
+            </li>
+            <li>
+              <span className="method get">GET</span>
+              <a href="/api/purchaseorderitem" target="_blank" rel="noreferrer">/api/purchaseorderitem</a>
+              <span className="desc">List item PO. Filter: poId, productId, limit.</span>
+            </li>
+            <li>
+              <span className="method get">GET</span>
+              <a href="/api/suppliers" target="_blank" rel="noreferrer">/api/suppliers</a>
+              <span className="desc">Daftar supplier.</span>
+            </li>
+            <li>
+              <span className="method get">GET</span>
+              <a href="/api/warehouses" target="_blank" rel="noreferrer">/api/warehouses</a>
+              <span className="desc">Daftar gudang.</span>
+            </li>
+          </ul>
         </section>
       </div>
 
@@ -149,6 +192,16 @@ export default function Page() {
         }
         code { background: rgba(255,255,255,.06); padding: 2px 6px; border-radius: 6px; }
         a code { background: transparent; padding: 0; }
+        .apiDir { margin-top: 36px; }
+        .apiDir h2 { text-align: center; margin-bottom: 14px; font-size: 20px; }
+        .endpoints { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+        .endpoints li { display: grid; grid-template-columns: 90px 1fr; align-items: center; gap: 10px; padding: 10px 12px; background: #0a0d19; border: 1px solid rgba(255,255,255,.08); border-radius: 10px; }
+        .endpoints li .desc { color: #a6aac2; display: block; grid-column: 2 / span 1; font-size: 12px; margin-top: 2px; }
+        .method { display: inline-flex; align-items: center; justify-content: center; min-width: 72px; padding: 4px 8px; border-radius: 999px; font-size: 12px; letter-spacing: .04em; color: #e8ebff; border: 1px solid rgba(255,255,255,.1); }
+        .method.get { background: rgba(16,185,129,.18); border-color: rgba(16,185,129,.35); }
+        .method.post { background: rgba(99,102,241,.18); border-color: rgba(99,102,241,.35); }
+        .method.mix { background: rgba(236,72,153,.18); border-color: rgba(236,72,153,.35); }
+        .endpoints a { color: #d7dbff; text-decoration: none; }
       `}</style>
     </main>
   );
