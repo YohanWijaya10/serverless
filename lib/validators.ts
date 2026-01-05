@@ -70,6 +70,25 @@ export const InventoryBalanceQuerySchema = z.object({
   productId: z.string().min(1)
 });
 
+// Minimal schema for administrative upsert of inventory balance
+export const InventoryBalanceUpsertSchema = z
+  .object({
+    warehouseId: z.string().min(1),
+    productId: z.string().min(1),
+    qtyOnHand: z.number().nonnegative().optional(),
+    qtyReserved: z.number().nonnegative().optional(),
+    safetyStock: z.number().nonnegative().optional(),
+    reorderPoint: z.number().nonnegative().optional()
+  })
+  .refine(
+    (v) =>
+      typeof v.qtyOnHand === 'number' ||
+      typeof v.qtyReserved === 'number' ||
+      typeof v.safetyStock === 'number' ||
+      typeof v.reorderPoint === 'number',
+    { message: 'At least one of qtyOnHand, qtyReserved, safetyStock, reorderPoint must be provided' }
+  );
+
 export const PurchaseOrderItemSchema = z.object({
   productId: z.string().min(1),
   qtyOrdered: z.number().positive()
