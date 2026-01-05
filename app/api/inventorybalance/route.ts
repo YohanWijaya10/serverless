@@ -6,6 +6,7 @@ import {
   InventoryBalancePutSchema,
   InventoryBalanceUpsertSchema
 } from '@/lib/validators';
+import { applyCORS, preflight } from '@/lib/cors';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -15,9 +16,9 @@ export async function GET() {
     const items = await (prisma as any).inventoryBalance.findMany({
       orderBy: [{ warehouseId: 'asc' }, { productId: 'asc' }]
     });
-    return NextResponse.json(toPlain(items));
+    return applyCORS(NextResponse.json(toPlain(items)));
   } catch (e: any) {
-    return NextResponse.json({ message: e?.message ?? 'Error' }, { status: 500 });
+    return applyCORS(NextResponse.json({ message: e?.message ?? 'Error' }, { status: 500 }));
   }
 }
 
@@ -40,10 +41,10 @@ export async function POST(req: NextRequest) {
       update: updateData
     });
 
-    return NextResponse.json(toPlain(item), { status: 201 });
+    return applyCORS(NextResponse.json(toPlain(item), { status: 201 }));
   } catch (e: any) {
     const status = e?.name === 'ZodError' ? 400 : 500;
-    return NextResponse.json({ message: e?.message ?? 'Error' }, { status });
+    return applyCORS(NextResponse.json({ message: e?.message ?? 'Error' }, { status }));
   }
 }
 
@@ -58,17 +59,17 @@ export async function PUT(req: NextRequest) {
       where: { warehouseId_productId: { warehouseId, productId } }
     });
     if (!existing) {
-      return NextResponse.json({ message: 'Not found' }, { status: 404 });
+      return applyCORS(NextResponse.json({ message: 'Not found' }, { status: 404 }));
     }
 
     const updated = await (prisma as any).inventoryBalance.update({
       where: { warehouseId_productId: { warehouseId, productId } },
       data: { qtyOnHand, qtyReserved, safetyStock, reorderPoint }
     });
-    return NextResponse.json(toPlain(updated));
+    return applyCORS(NextResponse.json(toPlain(updated)));
   } catch (e: any) {
     const status = e?.name === 'ZodError' ? 400 : 500;
-    return NextResponse.json({ message: e?.message ?? 'Error' }, { status });
+    return applyCORS(NextResponse.json({ message: e?.message ?? 'Error' }, { status }));
   }
 }
 
@@ -82,7 +83,7 @@ export async function PATCH(req: NextRequest) {
       where: { warehouseId_productId: { warehouseId, productId } }
     });
     if (!existing) {
-      return NextResponse.json({ message: 'Not found' }, { status: 404 });
+      return applyCORS(NextResponse.json({ message: 'Not found' }, { status: 404 }));
     }
 
     const data: Record<string, any> = {};
@@ -94,10 +95,10 @@ export async function PATCH(req: NextRequest) {
       where: { warehouseId_productId: { warehouseId, productId } },
       data
     });
-    return NextResponse.json(toPlain(updated));
+    return applyCORS(NextResponse.json(toPlain(updated)));
   } catch (e: any) {
     const status = e?.name === 'ZodError' ? 400 : 500;
-    return NextResponse.json({ message: e?.message ?? 'Error' }, { status });
+    return applyCORS(NextResponse.json({ message: e?.message ?? 'Error' }, { status }));
   }
 }
 
@@ -121,19 +122,26 @@ export async function DELETE(req: NextRequest) {
     }
 
     if (!warehouseId || !productId) {
-      return NextResponse.json({ message: 'warehouseId and productId are required' }, { status: 400 });
+      return applyCORS(
+        NextResponse.json({ message: 'warehouseId and productId are required' }, { status: 400 })
+      );
     }
 
     const existing = await (prisma as any).inventoryBalance.findUnique({
       where: { warehouseId_productId: { warehouseId, productId } }
     });
-    if (!existing) return NextResponse.json({ message: 'Not found' }, { status: 404 });
+    if (!existing)
+      return applyCORS(NextResponse.json({ message: 'Not found' }, { status: 404 }));
 
     await (prisma as any).inventoryBalance.delete({
       where: { warehouseId_productId: { warehouseId, productId } }
     });
-    return NextResponse.json({ ok: true });
+    return applyCORS(NextResponse.json({ ok: true }));
   } catch (e: any) {
-    return NextResponse.json({ message: e?.message ?? 'Error' }, { status: 500 });
+    return applyCORS(NextResponse.json({ message: e?.message ?? 'Error' }, { status: 500 }));
   }
+}
+
+export async function OPTIONS() {
+  return preflight();
 }
